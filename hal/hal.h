@@ -15,29 +15,25 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __MISC_H__
-#define __MISC_H__
+#ifndef __HAL_H__
+#define __HAL_H__
 
 #include <common/types.h>
 
-#define			GDT_SELECTOR_KERNEL_DATA		0x0000
-#define			GDT_SELECTOR_KERNEL_CODE64		0x0008
-
-#define			KERNEL_DPL						0
-#define			USER_DPL						3
-
 #ifndef __ASM__
 
-static inline UINT8 HalpInByte(UINT16 port) {
-	UINT8 value;
-	__asm__ __volatile__("in %1, %0":"=a"(value):"d"(port));
-	return value;
+static inline PVOID HalFastMemoryCopy(PVOID dest, PVOID src, SIZE_T lenght) {
+	SIZE_T remainder = lenght % sizeof(UINT64);
+	lenght = lenght / sizeof(UINT64);
+	UINT64_PTR d = (UINT64_PTR)dest, s = (UINT64_PTR)src;
+	__asm__ __volatile__("cld; rep; movsq":"+c"(lenght), "+D"(d), "+S"(s)::"memory", "cc");
+	__asm__ __volatile__("cld; rep; movsb":"+c"(remainder), "+D"(d), "+S"(s)::"memory", "cc");
+	return dest;
 }
 
-static inline VOID HalpOutByte(UINT16 port, UINT8 value) {
-	__asm__ __volatile__("out %0, %1"::"a"(value), "d"(port));
-}
+VOID HalEarlyPrintInit(VOID);
+SIZE_T HalEarlyPrint(CSTRING);
 
 #endif /* __ASM__ */
 
-#endif /* __MISC_H__ */
+#endif /* __HAL_H__ */

@@ -17,7 +17,11 @@
 
 #include <common/types.h>
 #include <header/multiboot2.h>
+#include <hal/hal.h>
 
 VOID KeSystemStartup(PMULTIBOOT2_INFO mbi, ADDRESS freeSpaceStart) {
 	// TODO: Phase 1 of the kernel startup code here...
+	HalEarlyPrintInit();
+
+	HalEarlyPrint("\033[1m\033[5m\033[31m\033[42mEarly print test ...\033[0m\n");
 }
