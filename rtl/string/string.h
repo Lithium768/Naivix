@@ -15,28 +15,16 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-.global			HalGDTREarly, HalGDTR
+#ifndef __STRING_H__
+#define __STRING_H__
 
-.section		.rodata.32
+#include <common/types.h>
 
-.align			8
+#ifndef __ASM__
 
-HalGDTEarly:
-.quad			0x0000000000000000
-.quad			0x0020980000000000
+SIZE_T RtlpCopyStringWithPadding(STRING, SIZE_T, CSTRING, BOOL, CHAR, SIZE_T);
+SIZE_T RtlpFillString(STRING, SIZE_T, CHAR, SIZE_T);
 
-HalGDTREarly:
-.word			HalGDTREarly - HalGDTEarly - 1
-.long			HalGDTEarly
+#endif /* __ASM__ */
 
-.section		.rodata
-
-.align			8
-
-HalGDT:
-.quad			0x0000000000000000
-.quad			0x0020980000000000
-
-HalGDTR:
-.word			HalGDTR - HalGDT - 1
-.quad			HalGDT
+#endif /* __STRING_H__ */

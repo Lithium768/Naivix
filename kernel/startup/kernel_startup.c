@@ -18,10 +18,17 @@
 #include <common/types.h>
 #include <header/multiboot2.h>
 #include <hal/hal.h>
+#include <rtl/rtl.h>
 
 VOID KeSystemStartup(PMULTIBOOT2_INFO mbi, ADDRESS freeSpaceStart) {
 	// TODO: Phase 1 of the kernel startup code here...
 	HalEarlyPrintInit();
 
-	HalEarlyPrint("\033[1m\033[5m\033[31m\033[42mEarly print test ...\033[0m\n");
+	CHAR buffer[1024];
+	for (UINT64 i = 30; i < 38; i++) {
+		for (UINT64 j = 40; j < 48; j++) {
+			buffer[RtlFormatString(buffer, 1024, "\033[1m\033[%um\033[%umEarly print test ...", i, j)] = '\0';
+			HalEarlyPrint(buffer);
+		}
+	}
 }

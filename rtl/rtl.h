@@ -15,28 +15,20 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-.global			HalGDTREarly, HalGDTR
+#ifndef __RTL_H__
+#define __RTL_H__
 
-.section		.rodata.32
+#include <common/types.h>
+#include <common/vaarg.h>
 
-.align			8
+#ifndef __ASM__
 
-HalGDTEarly:
-.quad			0x0000000000000000
-.quad			0x0020980000000000
+SIZE_T RtlFormatString(STRING, SIZE_T, CSTRING, ...);
+SIZE_T RtlvFormatString(STRING, SIZE_T, CSTRING, VA_LIST);
+SIZE_T RtlGetStringLenght(CSTRING);
+SIZE_T RtlCopyString(STRING, CSTRING, SIZE_T);
+SIZE_T RtlParseIntToString(STRING, SIZE_T, UINT64, UINT8);
 
-HalGDTREarly:
-.word			HalGDTREarly - HalGDTEarly - 1
-.long			HalGDTEarly
+#endif /* __ASM__ */
 
-.section		.rodata
-
-.align			8
-
-HalGDT:
-.quad			0x0000000000000000
-.quad			0x0020980000000000
-
-HalGDTR:
-.word			HalGDTR - HalGDT - 1
-.quad			HalGDT
+#endif /* __RTL_H__ */

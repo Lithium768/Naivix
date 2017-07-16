@@ -111,7 +111,7 @@ SIZE_T HalEarlyPrint(CSTRING string) {
 
 													UINT64 blue = (operand[i] & 0x4) >> 2;
 													operand[i] &= -0x5;
-													operand[i] |= operand[i] & 0x1;
+													operand[i] |= (operand[i] & 0x1) << 2;
 													operand[i] &= -0x2;
 													operand[i] |= blue;
 
