@@ -15,18 +15,20 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef __ASSERT_H__
+#define __ASSERT_H__
+
 #include <common/types.h>
-#include <header/multiboot2.h>
-#include <hal/hal.h>
 #include <kernel/debug/debug.h>
 
-VOID KeSystemStartup(PMULTIBOOT2_INFO mbi, ADDRESS freeSpaceStart) {
-	// TODO: Phase 1 of the kernel startup code here...
-	DbgInitialize();
+#ifndef __ASM__
 
-	for (UINT64 i = 30; i < 38; i++) {
-		for (UINT64 j = 40; j < 48; j++) {
-			DbgPrint("\033[1;%u;%umEarly print test ...", i, j);
-		}
-	}
-}
+#ifdef DEBUG
+#define			assert(expression)				((expression) ? false : DbgPanic("\n%s: In function: `%s':\n%s:%d: \033[31mError:\033[m Assertion failed\n\t%s\n\t\033[32m^\033[m\n", __FILE__, __FUNCTION__, __FILE__, __LINE__, #expression))
+#else
+#define			assert(expression)
+#endif /* DEBUG */
+
+#endif /* __ASM__ */
+
+#endif /* __ASSERT_H__ */

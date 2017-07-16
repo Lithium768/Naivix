@@ -15,18 +15,17 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef __DEBUG_H__
+#define __DEBUG_H__
+
 #include <common/types.h>
-#include <header/multiboot2.h>
-#include <hal/hal.h>
-#include <kernel/debug/debug.h>
 
-VOID KeSystemStartup(PMULTIBOOT2_INFO mbi, ADDRESS freeSpaceStart) {
-	// TODO: Phase 1 of the kernel startup code here...
-	DbgInitialize();
+#ifndef __ASM__
 
-	for (UINT64 i = 30; i < 38; i++) {
-		for (UINT64 j = 40; j < 48; j++) {
-			DbgPrint("\033[1;%u;%umEarly print test ...", i, j);
-		}
-	}
-}
+VOID DbgInitialize(VOID);
+SIZE_T DbgPrint(CSTRING, ...);
+VOID DbgPanic(CSTRING, ...);
+
+#endif /* __ASM__ */
+
+#endif /* __DEBUG_H__ */

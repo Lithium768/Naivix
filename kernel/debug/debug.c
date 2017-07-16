@@ -16,17 +16,36 @@
 */
 
 #include <common/types.h>
-#include <header/multiboot2.h>
 #include <hal/hal.h>
-#include <kernel/debug/debug.h>
+#include <rtl/rtl.h>
+#include <common/vaarg.h>
 
-VOID KeSystemStartup(PMULTIBOOT2_INFO mbi, ADDRESS freeSpaceStart) {
-	// TODO: Phase 1 of the kernel startup code here...
-	DbgInitialize();
+VOID DbgInitialize(VOID) {
+	HalEarlyPrintInit();
+}
 
-	for (UINT64 i = 30; i < 38; i++) {
-		for (UINT64 j = 40; j < 48; j++) {
-			DbgPrint("\033[1;%u;%umEarly print test ...", i, j);
-		}
-	}
+SIZE_T DbgPrint(CSTRING fmt, ...) {
+	CHAR buffer[1024];
+	VA_LIST ap;
+	VA_START(ap, fmt);
+
+	RtlvFormatString(buffer, 1024, fmt, ap);
+
+	VA_END(ap);
+
+	return HalEarlyPrint(buffer);
+}
+
+VOID DbgPanic(CSTRING fmt, ...) {
+	CHAR buffer[1024];
+	VA_LIST ap;
+	VA_START(ap, fmt);
+
+	RtlvFormatString(buffer, 1024, fmt, ap);
+
+	VA_END(ap);
+
+	HalEarlyPrint(buffer);
+
+	while (1);
 }
