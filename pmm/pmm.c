@@ -15,33 +15,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include		<common/config.h>
+#include <common/types.h>
+#include <pmm/pmm.h>
 
-.global			KiSystemStartup
-.extern			KeSystemStartup
+VOID PmmInitialize(PPMM_MEMORY_MAP mmap, ADDRESS freeSpaceStart) {
+	//TODO: Phisical memory manager initialization code here.
+}
 
-.section		.bss
-
-.align			8
-
-.lcomm			KiStack, KERNEL_STACK_SIZE
-
-.section		.text
-.code64
-
-KiSystemStartup:movq	$0x0000000000000000, 0xfffffffffffff000
-				invlpg	0x0000000000000000
-				
-				movabsq	$(KiStack + KERNEL_STACK_SIZE), %rsp
-				push	%rbp
-				movq	%rsp, %rbp
-				
-				movabsq	$KERNEL_BASE, %rbx
-				leaq	(%rbx, %rdi), %rdi
-				
-				movabsq	$KeSystemStartup, %rax
-				callq	*%rax
-				
-				leaveq
-_halt:			hlt
-				jmp		_halt
