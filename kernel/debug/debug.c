@@ -19,19 +19,42 @@
 #include <hal/hal.h>
 #include <rtl/rtl.h>
 #include <common/vaarg.h>
+#include <kernel/debug/debug.h>
 
 VOID DbgInitialize(VOID) {
 	HalEarlyPrintInit();
 }
 
-SIZE_T DbgPrint(CSTRING fmt, ...) {
+SIZE_T DbgPrint(CSTRING fmt, DBG_PREFIX_TYPE ptype, ...) {
 	CHAR buffer[1024];
 	VA_LIST ap;
-	VA_START(ap, fmt);
+	VA_START(ap, ptype);
 
 	RtlvFormatString(buffer, 1024, fmt, ap);
 
 	VA_END(ap);
+
+	switch (ptype) {
+		case DBG_PREFIX_TYPE_INFO: {
+			HalEarlyPrint("[  INFO  ] ");
+			break;
+		}
+
+		case DBG_PREFIX_TYPE_OK: {
+			HalEarlyPrint("[   \033[32mOK\033[m   ] ");
+			break;
+		}
+
+		case DBG_PREFIX_TYPE_ERROR: {
+			HalEarlyPrint("[  \033[31mERROR\033[m ] ");
+			break;
+		}
+
+		case DBG_PREFIX_TYPE_NONE: {
+			HalEarlyPrint("           ");
+			break;
+		}
+	}
 
 	return HalEarlyPrint(buffer);
 }
@@ -45,7 +68,8 @@ VOID DbgPanic(CSTRING fmt, ...) {
 
 	VA_END(ap);
 
+	HalEarlyPrint("[  \033[31mPANIC\033[m ] ");
 	HalEarlyPrint(buffer);
 
-	while (1);
+	while (1) __asm__ __volatile__("hlt");
 }

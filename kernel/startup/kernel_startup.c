@@ -25,18 +25,23 @@
 VOID KeSystemStartup(PMULTIBOOT2_INFO mbi, ADDRESS freeSpaceStart) {
 	DbgInitialize();
 
+	if (((ADDRESS)mbi & 0x7) != 0) {
+		DbgPanic("Non-aligned multiboot infomation, halted!\n");
+	}
+
+	DbgPrint("Phrasing multiboot infomation ...\n", DBG_PREFIX_TYPE_NONE);
 	for (PMULTIBOOT2_INFO_TAG_HEADER header = mbi->Tags; header->Type != TAG_TYPE_END; header += (header->Size + sizeof(MULTIBOOT2_INFO_TAG_HEADER) - 1) / sizeof(MULTIBOOT2_INFO_TAG_HEADER)) {
 		switch (header->Type) {
 			case TAG_TYPE_BOOT_LOADER_NAME: {
 				PMULTIBOOT2_INFO_BOOT_LOADER_NAME tag = (PMULTIBOOT2_INFO_BOOT_LOADER_NAME)header;
-				DbgPrint("[\033[1mINFO\033[m ] Boot loader name: `%s'\n", tag->LoaderName);
+				DbgPrint("Boot loader name: `%s'\n", DBG_PREFIX_TYPE_INFO, tag->LoaderName);
 				break;
 			}
 
 			case TAG_TYPE_MEMORY_MAP: {
 				PMULTIBOOT2_INFO_MEMORY_MAP tag = (PMULTIBOOT2_INFO_MEMORY_MAP)header;
 				if (24 != tag->EntrySize) {
-					DbgPanic("[\033[31;1mERROR\033[m] Unsupported size of `MULTIBOOT2_INFO_MEMORY_MAP'.");
+					DbgPanic("Unsupported size of `MULTIBOOT2_INFO_MEMORY_MAP', halted.\n");
 				}
 
 				SIZE_T memoryMapEntriesNum = (header->Size - sizeof(MULTIBOOT2_INFO_MEMORY_MAP)) / tag->EntrySize;
@@ -71,4 +76,5 @@ VOID KeSystemStartup(PMULTIBOOT2_INFO mbi, ADDRESS freeSpaceStart) {
 			}
 		}
 	}
+	DbgPrint("Phrased multiboot infomation.\n", DBG_PREFIX_TYPE_OK);
 }

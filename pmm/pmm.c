@@ -17,8 +17,24 @@
 
 #include <common/types.h>
 #include <pmm/pmm.h>
+#include <kernel/debug/debug.h>
 
 VOID PmmInitialize(PPMM_MEMORY_MAP mmap, ADDRESS freeSpaceStart) {
-	//TODO: Phisical memory manager initialization code here.
+	DbgPrint("Initializing phisical memory manager ...\n", DBG_PREFIX_TYPE_NONE);
+
+	SIZE_T memSize = 0;
+	DbgPrint("Memory ranges:\n", DBG_PREFIX_TYPE_INFO);
+	for (SIZE_T i = 0; i < mmap->EntriesNum; i++) {
+		DbgPrint("  [mem 0x%016x-0x%016x] %s\n", DBG_PREFIX_TYPE_INFO, mmap->Entries[i].Base, mmap->Entries[i].Base + mmap->Entries[i].Size, mmap->Entries[i].Type == PMM_MEMORY_TYPE_AVAILABLE ? "usable" : "reserved");
+		memSize += mmap->Entries[i].Type == PMM_MEMORY_TYPE_AVAILABLE ? mmap->Entries[i].Size : 0;
+	}
+	DbgPrint("Memory size: %u GB(s), %u MB(s), %u KB(s), %u Byte(s)\n", DBG_PREFIX_TYPE_INFO,
+			memSize / 0x40000000,
+			(memSize % 0x40000000) / 0x100000,
+			(memSize % 0x100000) / 0x400,
+			(memSize % 0x400) / 1
+			);
+
+	DbgPrint("Initialized phisical memory manager.\n", DBG_PREFIX_TYPE_OK);
 }
 

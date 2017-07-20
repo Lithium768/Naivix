@@ -22,8 +22,15 @@
 
 #ifndef __ASM__
 
+typedef enum _DBG_PREFIX_TYPE {
+	DBG_PREFIX_TYPE_INFO,
+	DBG_PREFIX_TYPE_OK,
+	DBG_PREFIX_TYPE_ERROR,
+	DBG_PREFIX_TYPE_NONE,
+} DBG_PREFIX_TYPE;
+
 VOID DbgInitialize(VOID);
-SIZE_T DbgPrint(CSTRING, ...);
+SIZE_T DbgPrint(CSTRING, DBG_PREFIX_TYPE, ...);
 VOID DbgPanic(CSTRING, ...);
 
 #endif /* __ASM__ */
